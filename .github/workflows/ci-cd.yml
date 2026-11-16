@@ -33,9 +33,8 @@ jobs:
 
       - name: Run tests
         run: |
-          # Игнорируем известные баги в тестах самого Flask (async и environ)
-          # чтобы пайплайн прошел успешно
-          pytest tests/ -v --ignore-glob="*test_helpers*" --ignore-glob="*test_reqctx*" || true
+          # Убрали || true, теперь падение тестов остановит сборку
+          pytest tests/ -v --ignore-glob="*test_helpers*" --ignore-glob="*test_reqctx*"
 
   build-and-run:
     name: Build and Run
@@ -68,19 +67,21 @@ jobs:
       - name: Install Flaskr example
         run: |
           source venv/bin/activate
-          pip install -e examples/tutorial/
+          # Важно: --no-deps, чтобы не переустановить Flask из wheel
+          pip install --no-deps -e examples/tutorial/
 
       - name: Initialize database
         run: |
           source venv/bin/activate
-          export FLASK_APP=flaskr
-          flask init-db
+          cd examples/tutorial
+          # Для новых версий Flask правильнее указывать приложение так:
+          flask --app flaskr init-db
 
       - name: Run app on port 5000
         run: |
           source venv/bin/activate
-          export FLASK_APP=flaskr
-          flask run --host=0.0.0.0 --port=5000 &
+          cd examples/tutorial
+          flask --app flaskr run --host=0.0.0.0 --port=5000 &
           sleep 5
+          # Проверяем, что сервер ответил
           curl -f http://localhost:5000 || exit 1
-          kill %1
