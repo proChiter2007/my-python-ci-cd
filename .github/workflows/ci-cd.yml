@@ -26,10 +26,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Ставим проект
           pip install -e .
-          # Фиксируем версии, чтобы избежать конфликтов
-          pip install pytest==8.3.3 asgiref "werkzeug<3.1"
+          # Ставим фиксированные версии
+          pip install pytest==8.3.3 asgiref
+          # ПРИНУДИТЕЛЬНО обновляем Werkzeug до свежей версии
+          pip install --upgrade "werkzeug>=3.0.0"
 
       - name: Run tests
         run: |
@@ -62,6 +63,8 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           pip install dist/*.whl
+          # Тут тоже обновляем Werkzeug на всякий случай
+          pip install --upgrade "werkzeug>=3.0.0"
 
       - name: Install Flaskr example
         run: |
