@@ -26,11 +26,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Ставим сам проект и тестовые зависимости (pytest и т.д.)
-          pip install -e ".[test]"
-          
+          pip install -e .
+          pip install pytest asgiref
+
       - name: Run tests
-       
         run: |
           pytest tests/ -v --ignore-glob="*test_helpers*" --ignore-glob="*test_reqctx*"
 
@@ -65,7 +64,7 @@ jobs:
       - name: Install Flaskr example
         run: |
           source venv/bin/activate
-          # --no-deps критически важен: не перезаписываем Flask из wheel
+          # --no-deps критически важен
           pip install --no-deps -e examples/tutorial/
 
       - name: Initialize database
