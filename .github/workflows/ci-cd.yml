@@ -26,13 +26,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          # Ставим проект
           pip install -e .
-          # Устанавливаем pytest и обновляем Werkzeug до свежей версии
-          pip install pytest asgiref "werkzeug>=3.0.0"
+          # Фиксируем версии, чтобы избежать конфликтов
+          pip install pytest==8.3.3 asgiref "werkzeug<3.1"
 
       - name: Run tests
         run: |
-          # Оставляем только игнорирование известных проблемных тестов
           pytest tests/ -v --ignore-glob="*test_helpers*" --ignore-glob="*test_reqctx*"
 
   build-and-run:
