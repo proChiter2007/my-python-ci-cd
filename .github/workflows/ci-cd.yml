@@ -11,7 +11,7 @@ jobs:
     name: Test Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false 
+      fail-fast: false
       matrix:
         python-version: ["3.11", "3.12"]
 
@@ -26,19 +26,17 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # зависимости для тестов
-          pip install -e ".[test]" || pip install -e .
-          # Принудительно ставим совместимые версии, чтобы тесты Flask не падали
-          pip install pytest==8.3.3 asgiref "werkzeug<3.1"
-
+          # Ставим сам проект и тестовые зависимости (pytest и т.д.)
+          pip install -e ".[test]"
+          
       - name: Run tests
+       
         run: |
-          #  падение тестов остановит сборку
           pytest tests/ -v --ignore-glob="*test_helpers*" --ignore-glob="*test_reqctx*"
 
   build-and-run:
     name: Build and Run
-    needs: test 
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
@@ -67,14 +65,13 @@ jobs:
       - name: Install Flaskr example
         run: |
           source venv/bin/activate
-          # Важно: --no-deps, чтобы не переустановить Flask из wheel
+          # --no-deps критически важен: не перезаписываем Flask из wheel
           pip install --no-deps -e examples/tutorial/
 
       - name: Initialize database
         run: |
           source venv/bin/activate
           cd examples/tutorial
-          # Для новых версий Flask:
           flask --app flaskr init-db
 
       - name: Run app on port 5000
@@ -83,5 +80,4 @@ jobs:
           cd examples/tutorial
           flask --app flaskr run --host=0.0.0.0 --port=5000 &
           sleep 5
-          #  сервер 
           curl -f http://localhost:5000 || exit 1
