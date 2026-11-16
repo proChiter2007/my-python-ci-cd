@@ -11,7 +11,7 @@ jobs:
     name: Test Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false # Важно: независимый запуск версий
+      fail-fast: false 
       matrix:
         python-version: ["3.11", "3.12"]
 
@@ -26,19 +26,19 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Ставим проект и зависимости для тестов
+          # зависимости для тестов
           pip install -e ".[test]" || pip install -e .
           # Принудительно ставим совместимые версии, чтобы тесты Flask не падали
           pip install pytest==8.3.3 asgiref "werkzeug<3.1"
 
       - name: Run tests
         run: |
-          # Убрали || true, теперь падение тестов остановит сборку
+          #  падение тестов остановит сборку
           pytest tests/ -v --ignore-glob="*test_helpers*" --ignore-glob="*test_reqctx*"
 
   build-and-run:
     name: Build and Run
-    needs: test # Запускается только после успеха тестов
+    needs: test 
     runs-on: ubuntu-latest
 
     steps:
@@ -74,7 +74,7 @@ jobs:
         run: |
           source venv/bin/activate
           cd examples/tutorial
-          # Для новых версий Flask правильнее указывать приложение так:
+          # Для новых версий Flask:
           flask --app flaskr init-db
 
       - name: Run app on port 5000
@@ -83,5 +83,5 @@ jobs:
           cd examples/tutorial
           flask --app flaskr run --host=0.0.0.0 --port=5000 &
           sleep 5
-          # Проверяем, что сервер ответил
+          #  сервер 
           curl -f http://localhost:5000 || exit 1
