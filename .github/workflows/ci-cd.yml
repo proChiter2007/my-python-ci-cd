@@ -63,7 +63,7 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           pip install dist/*.whl
-          # Тут тоже обновляем Werkzeug на всякий случай
+          # обновляем Werkzeug 
           pip install --upgrade "werkzeug>=3.0.0"
 
       - name: Install Flaskr example
